@@ -5,6 +5,10 @@ const dotenv = require('dotenv');
 const app = express();
 const port = 3000;
 
+// Load environment variables from .env file
+dotenv.config();
+const apiKey = process.env.API_KEY;
+
 app.use(bodyParser.json());
 
 // Define the API endpoint
