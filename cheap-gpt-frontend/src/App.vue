@@ -1,10 +1,11 @@
 <script setup>
 import { reactive } from 'vue'
-const messageStack = reactive({ messages: [] });
+const messageStack = reactive({ messages: [{role: "user", content: "Write all responses in HTML."}] });
 const inputModel = reactive({ userInput: null });
 
 function sendMessages() {
 	messageStack.messages.push({ role: "user", content: inputModel.userInput });
+	inputModel.userInput = '';
 	fetch('http://localhost:3000/api/test2', {
 		method: 'POST',
 		headers: {
@@ -19,12 +20,27 @@ function sendMessages() {
 
 function handleResponseData(data) {
 	console.log(data);
+	// let cleaned = addPreTags(data.completion);
+	// cleaned = addBrTags(cleaned);
 	messageStack.messages.push({ role: "assistant", content: data.completion });
 }
 
 function clearMessages() {
 	messageStack.messages.length = 0;
 }
+
+function addPreTags(str) {
+	// Regular expression to find text surrounded by 3 backticks
+	const regex = /```([\s\S]*?)```/g;
+
+	// Replace backticks with <pre> tags
+	return str.replace(regex, '<pre>$1</pre>');
+}
+
+function addBrTags(str) {
+	return str.replace(/\n+/g, '<br>');
+}
+
 </script>
 
 <template>
@@ -32,7 +48,7 @@ function clearMessages() {
 		<h1>Message Stack</h1>
 		<div v-for="msg in messageStack.messages">
 			<h3>{{ msg.role }}</h3>
-			<div>{{ msg.content }}</div>
+			<div v-html="msg.content"></div>
 		</div>
 
 		<button type="button" id="clearBtn" @click="clearMessages">Clear</button>

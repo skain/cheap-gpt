@@ -12,7 +12,7 @@ dotenv.config();
 const apiKey = process.env.API_KEY;
 
 const configuration = new Configuration({
-	apiKey: apiKey,
+	apiKey: apiKey
 });
 const openai = new OpenAIApi(configuration);
 
@@ -40,9 +40,6 @@ app.post('/api/test', async (req, res) => {
 
 app.post('/api/test2', async (req, res) => {
 	const messages = req.body.messages;
-	// const messages = [
-	// 	{ role: 'user', content: "How's the weather up there?" },
-	// ];
 	console.log('start');
 	console.log(messages);
 	console.log(messages[0]);
