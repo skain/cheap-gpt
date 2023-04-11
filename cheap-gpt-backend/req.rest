@@ -1,0 +1,9 @@
+POST http://localhost:3000/api/objects
+Content-Type: application/json
+
+{
+  "objects": [
+    { "name": "object1", "value": 10 },
+    { "name": "object2", "value": 20 }
+  ]
+}
