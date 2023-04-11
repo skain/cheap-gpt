@@ -1,30 +1,55 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import { reactive } from 'vue'
+const messageStack = reactive({ messages: [] });
+const inputModel = reactive({ userInput: null });
+
+function sendMessages() {
+	messageStack.messages.push({ role: "user", content: inputModel.userInput });
+	fetch('http://localhost:3000/api/test2', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(messageStack)
+	})
+		.then(response => response.json())
+		.then(data => handleResponseData(data))
+		.catch(error => console.log(error));
+}
+
+function handleResponseData(data) {
+	console.log(data);
+	messageStack.messages.push({ role: "assistant", content: data.completion });
+}
+
+function clearMessages() {
+	messageStack.messages.length = 0;
+}
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+	<div id="messageStack">
+		<h1>Message Stack</h1>
+		<div v-for="msg in messageStack.messages">
+			<h3>{{ msg.role }}</h3>
+			<div>{{ msg.content }}</div>
+		</div>
+
+		<button type="button" id="clearBtn" @click="clearMessages">Clear</button>
+	</div>
+	<div id="inputUI">
+		<h1>Input</h1>
+		<input type="text" v-model="inputModel.userInput" /> <button type="button" @click="sendMessages">Send</button>
+	</div>
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+div {
+	border: solid 1px red;
+	padding: 1em;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+#messageStack {
+	position: relative;
 }
 </style>
