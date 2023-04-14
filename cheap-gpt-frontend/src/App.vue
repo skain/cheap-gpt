@@ -6,7 +6,7 @@ const inputModel = reactive({ userInput: null });
 function sendMessages() {
 	messageStack.messages.push({ role: "user", content: inputModel.userInput });
 	inputModel.userInput = '';
-	fetch('http://localhost:3000/api/test2', {
+	fetch('http://localhost:3000/api/chat', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
