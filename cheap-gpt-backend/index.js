@@ -62,6 +62,7 @@ async function runCompletion() {
 async function runChatCompletion(messages) {
 	const completion = await openai.createChatCompletion({
 		model: "gpt-3.5-turbo",
+		// format: "html",
 		messages: messages,
 	});
 

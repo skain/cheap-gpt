@@ -1,6 +1,6 @@
 <script setup>
 import { reactive } from 'vue'
-const messageStack = reactive({ messages: [{role: "user", content: "Write all responses in HTML."}] });
+const messageStack = reactive({ messages: [] });
 const inputModel = reactive({ userInput: null });
 
 function sendMessages() {
