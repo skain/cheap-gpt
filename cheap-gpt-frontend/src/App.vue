@@ -46,23 +46,74 @@ function addBrTags(str) {
 <template>
 	<div id="messageStack">
 		<h1>Message Stack</h1>
-		<div v-for="msg in messageStack.messages">
+		<div v-for="msg in messageStack.messages" :class="`${msg.role} messageContent`">
 			<h3>{{ msg.role }}</h3>
 			<div v-html="msg.content"></div>
 		</div>
 
 		<button type="button" id="clearBtn" @click="clearMessages">Clear</button>
 	</div>
-	<div id="inputUI">
+	<div id="input">
 		<h1>Input</h1>
-		<input type="text" v-model="inputModel.userInput" /> <button type="button" @click="sendMessages">Send</button>
+		<div id="ui">
+			<textarea v-model="inputModel.userInput" rows="4" @keyup.enter="sendMessages"></textarea> <button type="button" @click="sendMessages">Send</button>
+		</div>
 	</div>
 </template>
 
 <style scoped>
+div.messageContent {
+	position: relative;
+}
+
+div.messageContent::before {
+	content: open-quote;
+	position: absolute;
+	left: -3px;
+	top: -45px;
+	font-size: 7rem;
+	font-family: 'Playfair Display', serif;
+	color: rgba(233,233,233, .5);
+}
+
+div.messageContent::after {
+	content: no-close-quote;
+}
+
+h3 {
+	text-align: left;
+	text-transform: capitalize;
+	font-weight: bold;
+}
 div {
-	border: solid 1px red;
 	padding: 1em;
+}
+
+#messageStack>div {
+	border-radius: 8px;
+	margin: 4px auto;
+}
+
+#ui {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+#ui > textarea {
+	flex: 1;
+}
+
+div.system {
+	background-color: rgb(30, 30, 30);
+}
+
+div.user {
+	background-color: rgb(60, 60, 60);
+}
+
+div.assistant {
+	background-color: rgb(120, 120, 120);
 }
 
 #messageStack {
