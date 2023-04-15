@@ -1,7 +1,7 @@
 <script setup>
 import { reactive } from 'vue'
 const messageStack = reactive({ messages: [] });
-const inputModel = reactive({ userInput: null });
+const inputModel = reactive({ userInput: null, sendOnEnter: true });
 const sdConverter = new showdown.Converter();
 
 function sendMessages() {
@@ -26,7 +26,6 @@ function handleResponseData(data) {
 	setTimeout(() => {
 		//sucks, but this delay accounts for the time it takes vue to 
 		//update the page. probaby a better way but this is working.
-		console.log('scrolling');
 		window.scrollTo(0, document.body.scrollHeight);
 	}, 500);
 }
@@ -35,18 +34,11 @@ function clearMessages() {
 	messageStack.messages.length = 0;
 }
 
-function addPreTags(str) {
-	// Regular expression to find text surrounded by 3 backticks
-	const regex = /```([\s\S]*?)```/g;
-
-	// Replace backticks with <pre> tags
-	return str.replace(regex, '<pre>$1</pre>');
+function enterKeyUp() {
+	if (inputModel.sendOnEnter) {
+		sendMessages();
+	}
 }
-
-function addBrTags(str) {
-	return str.replace(/\n+/g, '<br>');
-}
-
 </script>
 
 <template>
@@ -62,7 +54,15 @@ function addBrTags(str) {
 	<div id="input">
 		<hr />
 		<div id="ui">
-			<textarea v-model="inputModel.userInput" rows="4" @keyup.enter="sendMessages" placeholder="Type your message here..."></textarea> <button type="button" @click="sendMessages">Send</button>
+			<textarea v-model="inputModel.userInput" rows="4" @keyup.enter="enterKeyUp"
+				placeholder="Type your message here..."></textarea>
+			<div>
+				<button type="button" @click="sendMessages">Send</button>
+				<div>
+					<input type="checkbox" v-model="inputModel.sendOnEnter" id="sendOnEnter" />
+					<label for="sendOnEnter">Send on enter?</label>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -79,7 +79,7 @@ div.messageContent::before {
 	top: -45px;
 	font-size: 7rem;
 	font-family: 'Playfair Display', serif;
-	color: rgba(233,233,233, .5);
+	color: rgba(233, 233, 233, .5);
 }
 
 div.messageContent::after {
@@ -100,11 +100,21 @@ h3 {
 
 #ui {
 	display: flex;
-	align-items: center;
+	align-items: top;
 	gap: 10px;
 }
 
-#ui > textarea {
+#ui>div {
+	display: flex;
+	flex-direction: column;
+}
+
+#ui label {
+	font-size: .8em;
+	font-style: italic;
+}
+
+#ui>textarea {
 	flex: 1;
 }
 
