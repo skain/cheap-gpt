@@ -1,9 +1,10 @@
-import {Configuration, OpenAIApi } from "openai";
+import {ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { ChatMessage } from "./chatMessage.js";
+
+
 
 const app = express();
 const port = 3000;
@@ -19,7 +20,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.post('/api/chat', async (req, res) => {
-	const messages: {role: string, content: string}[] = req.body.messages;
+	const messages: ChatCompletionRequestMessage[] = req.body.messages;
 	console.log("MESSAGES:");
 	console.log(messages);
 	try {
@@ -38,13 +39,15 @@ app.post('/api/chat', async (req, res) => {
 // 	return completion.data.choices[0].text;
 // }
 
-async function runChatCompletion(messages: any[]) {
+async function runChatCompletion(messages: ChatCompletionRequestMessage[]) {
 	const completion = await openai.createChatCompletion({
 		model: "gpt-3.5-turbo",
 		messages: messages,
 	});
 
 	let response = completion.data.choices[0].message.content;
+	
+	console.log(response);
 	console.log("RESPONSE:");
 	console.log(response);
 	return response;
@@ -54,3 +57,6 @@ async function runChatCompletion(messages: any[]) {
 app.listen(port, () => {
 	console.log(`Server listening at http://localhost:${port}`);
 });
+
+
+

@@ -2,6 +2,7 @@
 import { reactive } from 'vue'
 const messageStack = reactive({ messages: [] });
 const inputModel = reactive({ userInput: null });
+const sdConverter = new showdown.Converter();
 
 function sendMessages() {
 	messageStack.messages.push({ role: "user", content: inputModel.userInput });
@@ -20,9 +21,14 @@ function sendMessages() {
 
 function handleResponseData(data) {
 	console.log(data);
-	// let cleaned = addPreTags(data.completion);
-	// cleaned = addBrTags(cleaned);
-	messageStack.messages.push({ role: "assistant", content: data.completion });
+	let md = sdConverter.makeHtml(data.completion);
+	messageStack.messages.push({ role: "assistant", content: md });
+	setTimeout(() => {
+		//sucks, but this delay accounts for the time it takes vue to 
+		//update the page. probaby a better way but this is working.
+		console.log('scrolling');
+		window.scrollTo(0, document.body.scrollHeight);
+	}, 500);
 }
 
 function clearMessages() {
@@ -45,7 +51,7 @@ function addBrTags(str) {
 
 <template>
 	<div id="messageStack">
-		<h1>Message Stack</h1>
+		<h1>Cheap GPT</h1>
 		<div v-for="msg in messageStack.messages" :class="`${msg.role} messageContent`">
 			<h3>{{ msg.role }}</h3>
 			<div v-html="msg.content"></div>
@@ -54,9 +60,9 @@ function addBrTags(str) {
 		<button type="button" id="clearBtn" @click="clearMessages">Clear</button>
 	</div>
 	<div id="input">
-		<h1>Input</h1>
+		<hr />
 		<div id="ui">
-			<textarea v-model="inputModel.userInput" rows="4" @keyup.enter="sendMessages"></textarea> <button type="button" @click="sendMessages">Send</button>
+			<textarea v-model="inputModel.userInput" rows="4" @keyup.enter="sendMessages" placeholder="Type your message here..."></textarea> <button type="button" @click="sendMessages">Send</button>
 		</div>
 	</div>
 </template>
@@ -85,13 +91,11 @@ h3 {
 	text-transform: capitalize;
 	font-weight: bold;
 }
-div {
-	padding: 1em;
-}
 
 #messageStack>div {
 	border-radius: 8px;
 	margin: 4px auto;
+	padding: 1.6em;
 }
 
 #ui {
